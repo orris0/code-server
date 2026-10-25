@@ -160,7 +160,18 @@ jobs:
       - name: Install nfpm
         run: |
           mkdir -p ~/.local/bin
-          curl -sSfL https://github.com/goreleaser/nfpm/releases/download/v2.3.1/nfpm_2.3.1_`uname -s`_`uname -m`.tar.gz | tar -C ~/.local/bin -zxv nfpm
+          ARCH=`uname -m`
+          curl -sSfL -o /tmp/nfpm.tar.gz https://github.com/goreleaser/nfpm/releases/download/v2.3.1/nfpm_2.3.1_`uname -s`_${ARCH}.tar.gz
+          if [ "$ARCH" = "x86_64" ]; then
+            echo "39d1fa2461537f71bf2da8e54dff9ecfd75d9f14eb5f7574c74587e2fedc3305  /tmp/nfpm.tar.gz" | shasum -a 256 -c
+          elif [ "$ARCH" = "arm64" ]; then
+            echo "a136f6502d7a71ed5c8328652ab9b6d09f244d53b1ae030cdd3090ab6ea96cf4  /tmp/nfpm.tar.gz" | shasum -a 256 -c
+          else
+            echo "Unsupported architecture: $ARCH"
+            exit 1
+          fi
+          tar -C ~/.local/bin -zxvf /tmp/nfpm.tar.gz nfpm
+          rm /tmp/nfpm.tar.gz
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Strip update/ and v from tag and set major version
