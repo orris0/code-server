@@ -12,9 +12,7 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write # For creating releases.
-  discussions: write #  For creating a discussion.
+permissions: {}
 
 # Cancel in-progress runs for pull requests when developers push
 # additional changes
@@ -26,6 +24,9 @@ jobs:
   package-linux:
     name: ${{ format('linux-{0}', matrix.vscode_arch) }}
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write # For creating releases.
+      discussions: write #  For creating a discussion.
     if: >-
       (github.event_name == 'workflow_dispatch') ||
       (github.event_name == 'pull_request' && github.event.pull_request.merged == true && startsWith(github.head_ref, 'update/'))
@@ -134,6 +135,9 @@ jobs:
   package-macos:
     name: ${{ matrix.vscode_target }}
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write # For creating releases.
+      discussions: write #  For creating a discussion.
     if: >-
       (github.event_name == 'workflow_dispatch') ||
       (github.event_name == 'pull_request_target' && github.event.pull_request.merged == true && startsWith(github.head_ref, 'update/'))
